@@ -1,0 +1,118 @@
+<html>
+
+<head>
+    <title>Web3 Metamask Login</title>
+    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+</head>
+
+<body class="flex w-screen h-screen justify-center items-center">
+<div class="flex-col space-y-2 justify-center items-center">
+    <div>
+        <button id='loginButton' onclick="" class="mx-auto rounded-md p-2 bg-purple-500 text-white">
+            Login with MetaMask
+        </button>
+    </div>
+
+    <div>
+        <button id='Buy' onclick="" class="mx-auto rounded-md p-2 bg-purple-500 text-white">
+            Buy
+        </button>
+    </div>
+
+    <div>
+        <button id='add-token' onclick="addToken()" class="mx-auto rounded-md p-2 bg-purple-500 text-white">
+            Add to metamask
+        </button>
+    </div>
+
+    <label for="inp_1">Введите id токена:</label>
+    <input type="number" step="1" pattern="\d+"class="form-control" id="inp_1">
+    <label for="inp_2">Введите количество:</label>
+    <input type="number" step="1" pattern="\d+" class="form-control" id="inp_2">
+
+    <div>
+        <spa>Wallet:</spa>
+        <span id="wallet-address"></span>
+
+    </div>
+    <div>
+        <span>Item 1 total tokens:</span>
+        <span id="item-1">0</span>
+        <br>
+        <span>Item 1 wallet tokens:</span>
+        <span id="item-1-wallet">0</span>
+    </div>
+    <div>
+        <span>Item 2 total tokens:</span>
+        <span id="item-2">0</span>
+        <br>
+
+        <span>Item 2 wallet tokens:</span>
+        <span id="item-2-wallet">0</span>
+    </div>
+    <div>
+        <span>Item 3 total tokens:</span>
+        <span id="item-3">0</span>
+        <br>
+
+        <span>Item 3 wallet tokens:</span>
+        <span id="item-3-wallet">0</span>
+    </div>
+    <p id='userWallet' class='text-lg text-gray-600 my-2'></p>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.7.1-rc.0/web3.min.js" integrity="sha512-Ui9NE+/XdhwxssTrWetwWgpwpZJCLgTpB2dgkq+xe3O7lmZEJe+2rw3OT3YbYIUCQWH5dOO8ObLOYmbUVpPBgw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="abi.js"></script>
+<script src="index.js"></script>
+<script>
+
+    window.userWalletAddress = null
+    const loginButton = document.getElementById('loginButton')
+    const userWallet = document.getElementById('userWallet')
+
+    function toggleButton() {
+        if (!window.ethereum) {
+            loginButton.innerText = 'MetaMask is not installed'
+            loginButton.classList.remove('bg-purple-500', 'text-white')
+            loginButton.classList.add('bg-gray-500', 'text-gray-100', 'cursor-not-allowed')
+            return false
+        }
+
+        loginButton.addEventListener('click', loginWithMetaMask)
+    }
+
+    async function loginWithMetaMask() {
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' })
+            .catch((e) => {
+                console.error(e.message)
+                return
+            })
+        if (!accounts) { return }
+
+        window.userWalletAddress = accounts[0]
+        userWallet.innerText = window.userWalletAddress
+        loginButton.innerText = 'Sign out of MetaMask'
+
+        loginButton.removeEventListener('click', loginWithMetaMask)
+        setTimeout(() => {
+            loginButton.addEventListener('click', signOutOfMetaMask)
+        }, 200)
+    }
+
+    function signOutOfMetaMask() {
+        window.userWalletAddress = null
+        userWallet.innerText = ''
+        loginButton.innerText = 'Sign in with MetaMask'
+
+        loginButton.removeEventListener('click', signOutOfMetaMask)
+        setTimeout(() => {
+            loginButton.addEventListener('click', loginWithMetaMask)
+        }, 200)
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        toggleButton()
+    });
+</script>
+</body>
+
+</html>
